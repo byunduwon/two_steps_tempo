@@ -25,7 +25,11 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
   String metronomeIcon = 'assets/metronome-left.png';
   String metronomeIconRight = 'assets/metronome-right.png';
   String metronomeIconLeft = 'assets/metronome-left.png';
-  int counter = 0;
+  int firstCounter = 0;
+  int secondCounter = 0;
+  int setCounter = 0;
+  int totalCounter = 0;
+
   final List wavs = [
     'base',
     'claves',
@@ -51,10 +55,10 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
       if (kDebugMode) {
         print('tick');
       }
-      counter++;
-      print('${counter}-----${bpm}');
+      totalCounter++;
+      print('${totalCounter}-----${bpm}');
 
-      if (counter == 10) {
+      if (totalCounter == 10) {
         bpm = 40;
         _metronomePlugin.setBPM(bpm);
       }
@@ -76,6 +80,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
   @override
   dispose() {
     controller!.removeListener(tabListener);
+    _metronomePlugin.destroy();
     super.dispose();
   }
 
@@ -83,8 +88,13 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black38,
-        title: Text('Two Steps Tempo Generator'),
+        backgroundColor: Colors.blue,
+        title: Text('Two Steps Tempo Generator',
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 25.0,
+          fontWeight: FontWeight.w600,
+        ),),
         centerTitle: true,
       ),
       body: TabBarView(
@@ -103,13 +113,14 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
         secondBPM: secondBPM,
         secondTimes: secondTimes,
         setsNumber: setsNumber,
+        playState: isplaying,
         firstBPMChanged: firstBPMChanged,
         firstTimesChanged: firstTimesChanged,
         secondBPMChanged: secondBPMChanged,
         secondTimesChanged: secondTimesChanged,
         setsNumberChanged: setsNumberChanged,
         imagePath: metronomeIcon,
-        playController: playController,
+        playChanged: playChanged,
       ),
       SettingsScreen(
         firstBPM: firstBPM,
@@ -156,8 +167,8 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
     });
   }
 
-  void playController() async {
-    if (isplaying) {
+  void playChanged(bool p_state) async {
+    if (p_state) {
       _metronomePlugin.pause();
       isplaying = false;
     } else {

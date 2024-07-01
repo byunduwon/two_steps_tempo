@@ -7,13 +7,14 @@ class HomeScreen extends StatelessWidget {
   final int secondBPM;
   final int secondTimes;
   final int setsNumber;
+  final bool playState;
 
   final ValueChanged<double> firstBPMChanged;
   final ValueChanged<int> firstTimesChanged;
   final ValueChanged<double> secondBPMChanged;
   final ValueChanged<int> secondTimesChanged;
   final ValueChanged<int> setsNumberChanged;
-  final void playController;
+  final ValueChanged<bool> playChanged;
 
   final String imagePath;
 
@@ -23,6 +24,7 @@ class HomeScreen extends StatelessWidget {
     required this.secondBPM,
     required this.secondTimes,
     required this.setsNumber,
+    required this.playState,
     Key? key,
     required this.firstBPMChanged,
     required this.firstTimesChanged,
@@ -30,7 +32,7 @@ class HomeScreen extends StatelessWidget {
     required this.secondTimesChanged,
     required this.setsNumberChanged,
     required this.imagePath,
-    required this.playController,
+    required this.playChanged,
   }) : super(key: key);
 
   @override
@@ -57,7 +59,7 @@ class HomeScreen extends StatelessWidget {
         Text(
           '설정 스크린',
           style: TextStyle(
-            color: Colors.white,
+            color: Colors.black,
             fontSize: 50,
           ),
         ),
@@ -84,8 +86,11 @@ class HomeScreen extends StatelessWidget {
           label: firstBPM.toStringAsFixed(1),
         ),
         OutlinedButton(
-            onPressed: (){},
-            child: Text('플레이 버튼'))
+            onPressed: (){
+              playChanged(playState);
+              },
+            child: Icon(playState ? Icons.pause : Icons.play_arrow),
+        )
       ],
     );
   }
