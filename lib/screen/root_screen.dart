@@ -1,8 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:two_steps_metronome/screen/home_screen.dart';
 import 'package:two_steps_metronome/screen/settings_screen.dart';
 import 'package:two_steps_metronome/const/colors.dart';
-
+import 'package:metronome/metronome.dart';
 
 class RootScreen extends StatefulWidget {
   const RootScreen({Key? key}) : super(key: key);
@@ -11,49 +12,90 @@ class RootScreen extends StatefulWidget {
   State<RootScreen> createState() => _RootScreenState();
 }
 
-class _RootScreenState extends State<RootScreen> with
-TickerProviderStateMixin{
-
+class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
   TabController? controller;
   int firstBPM = 10, firstTimes = 6;
   int secondBPM = 5, secondTimes = 3;
   int setsNumber = 1;
 
+  final _metronomePlugin = Metronome();
+  bool isplaying = false;
+  int bpm = 120;
+  int vol = 50;
+  String metronomeIcon = 'assets/metronome-left.png';
+  String metronomeIconRight = 'assets/metronome-right.png';
+  String metronomeIconLeft = 'assets/metronome-left.png';
+  int counter = 0;
+  final List wavs = [
+    'base',
+    'claves',
+    'hihat',
+    'snare',
+    'sticks',
+    'woodblock_high'
+  ];
+
   @override
-  void initState(){
+  void initState() {
     super.initState();
     controller = TabController(length: 2, vsync: this);
     controller!.addListener(tabListener);
+
+    _metronomePlugin.init(
+      'assets/audio/snare44_wav.wav',
+      bpm: bpm,
+      volume: vol,
+      enableTickCallback: true,
+    );
+    _metronomePlugin.onListenTick((_) {
+      if (kDebugMode) {
+        print('tick');
+      }
+      counter++;
+      print('${counter}-----${bpm}');
+
+      if (counter == 10) {
+        bpm = 40;
+        _metronomePlugin.setBPM(bpm);
+      }
+
+      setState(() {
+        if (metronomeIcon == metronomeIconRight) {
+          metronomeIcon = metronomeIconLeft;
+        } else {
+          metronomeIcon = metronomeIconRight;
+        }
+      });
+    });
   }
 
-
-  tabListener(){
-    setState((){});
+  tabListener() {
+    setState(() {});
   }
 
   @override
-  dispose(){
+  dispose() {
     controller!.removeListener(tabListener);
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.purple,
+        backgroundColor: Colors.black38,
         title: Text('Two Steps Tempo Generator'),
-      centerTitle: true,
+        centerTitle: true,
       ),
       body: TabBarView(
         controller: controller,
         children: renderChildren(),
       ),
-        bottomNavigationBar: renderBottomNavigation(),
+      bottomNavigationBar: renderBottomNavigation(),
     );
   }
 
-  List<Widget> renderChildren(){
+  List<Widget> renderChildren() {
     return [
       HomeScreen(
         firstBPM: firstBPM,
@@ -66,6 +108,8 @@ TickerProviderStateMixin{
         secondBPMChanged: secondBPMChanged,
         secondTimesChanged: secondTimesChanged,
         setsNumberChanged: setsNumberChanged,
+        imagePath: metronomeIcon,
+        playController: playController,
       ),
       SettingsScreen(
         firstBPM: firstBPM,
@@ -82,58 +126,76 @@ TickerProviderStateMixin{
     ];
   }
 
-  void firstBPMChanged(double val1){
-    setState((){
+  void firstBPMChanged(double val1) {
+    setState(() {
       firstBPM = val1.toInt();
     });
   }
-  void firstTimesChanged(int time1){
-    setState((){
+
+  void firstTimesChanged(int time1) {
+    setState(() {
       firstBPM = time1;
     });
   }
-  void secondBPMChanged(double val2){
-    setState((){
+
+  void secondBPMChanged(double val2) {
+    setState(() {
       secondBPM = val2.toInt();
     });
   }
-  void secondTimesChanged(int time2){
-    setState((){
+
+  void secondTimesChanged(int time2) {
+    setState(() {
       secondTimes = time2;
     });
   }
-  void setsNumberChanged(int setNum){
-    setState((){
+
+  void setsNumberChanged(int setNum) {
+    setState(() {
       setsNumber = setNum;
     });
   }
 
+  void playController() async {
+    if (isplaying) {
+      _metronomePlugin.pause();
+      isplaying = false;
+    } else {
+      //bpm = 40;
+      //_metronomePlugin.setBPM(40);
+      _metronomePlugin.setVolume(vol);
+      _metronomePlugin.play(bpm);
+      isplaying = true;
+    }
+    // int? bpm2 = await _metronomePlugin.getBPM();
+    // print(bpm2);
+    // int? vol2 = await _metronomePlugin.getVolume();
+    // print(vol2);
+    setState(() {});
+  }
 
-
-
-
-  BottomNavigationBar renderBottomNavigation(){
+  BottomNavigationBar renderBottomNavigation() {
     return BottomNavigationBar(
-        currentIndex: controller!.index,
-        onTap: (int index) {
-          setState((){
-            controller!.animateTo(index);
-          });
-        },
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.queue_music_rounded,
-            ),
-            label: 'start',
+      currentIndex: controller!.index,
+      onTap: (int index) {
+        setState(() {
+          controller!.animateTo(index);
+        });
+      },
+      items: [
+        BottomNavigationBarItem(
+          icon: Icon(
+            Icons.queue_music_rounded,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.settings,
-            ),
-            label: 'settings',
+          label: 'start',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(
+            Icons.settings,
           ),
-        ],
+          label: 'settings',
+        ),
+      ],
     );
   }
 }

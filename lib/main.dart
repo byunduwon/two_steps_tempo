@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:metronome/metronome.dart';
 import 'package:two_steps_metronome/screen/root_screen.dart';
 import 'package:two_steps_metronome/const/colors.dart';
 

@@ -13,6 +13,9 @@ class HomeScreen extends StatelessWidget {
   final ValueChanged<double> secondBPMChanged;
   final ValueChanged<int> secondTimesChanged;
   final ValueChanged<int> setsNumberChanged;
+  final void playController;
+
+  final String imagePath;
 
   const HomeScreen({
     required this.firstBPM,
@@ -26,6 +29,8 @@ class HomeScreen extends StatelessWidget {
     required this.secondBPMChanged,
     required this.secondTimesChanged,
     required this.setsNumberChanged,
+    required this.imagePath,
+    required this.playController,
   }) : super(key: key);
 
   @override
@@ -35,7 +40,7 @@ class HomeScreen extends StatelessWidget {
       children: [
         Center(
           child: Image.asset(
-            'assets/metronome-left.png',
+            imagePath,
             height: 200,
             //color: Colors.blue,
           ),
@@ -78,6 +83,9 @@ class HomeScreen extends StatelessWidget {
           onChanged: firstBPMChanged,
           label: firstBPM.toStringAsFixed(1),
         ),
+        OutlinedButton(
+            onPressed: (){},
+            child: Text('플레이 버튼'))
       ],
     );
   }
