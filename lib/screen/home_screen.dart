@@ -37,7 +37,7 @@ class HomeScreen extends StatelessWidget {
           child: Image.asset(
             'assets/metronome-left.png',
             height: 200,
-            color: Colors.blue,
+            //color: Colors.blue,
           ),
         ),
         SizedBox(height: 32.0),
