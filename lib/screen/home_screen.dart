@@ -50,13 +50,13 @@ class HomeScreen extends StatelessWidget {
         SizedBox(height: 32.0),
         Text(
           firstBPM.toString(),
-          style: TextStyle(
+          style: const TextStyle(
             color: primaryColor,
             fontSize: 60.0,
             fontWeight: FontWeight.w200,
           ),
         ),
-        Text(
+        const Text(
           '설정 스크린',
           style: TextStyle(
             color: Colors.black,

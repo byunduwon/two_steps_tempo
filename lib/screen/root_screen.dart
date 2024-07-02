@@ -14,8 +14,8 @@ class RootScreen extends StatefulWidget {
 
 class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
   TabController? controller;
-  int firstBPM = 10, firstTimes = 6;
-  int secondBPM = 5, secondTimes = 3;
+  int firstBPM = 60, firstTimes = 6;
+  int secondBPM = 20, secondTimes = 3;
   int setsNumber = 1;
 
   final _metronomePlugin = Metronome();
@@ -29,6 +29,8 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
   int secondCounter = 0;
   int setCounter = 0;
   int totalCounter = 0;
+
+  bool isFirstStep = true;
 
   final List wavs = [
     'base',
@@ -45,23 +47,66 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
     controller = TabController(length: 2, vsync: this);
     controller!.addListener(tabListener);
 
+    /*
+    List<int> stepChange = [10, 20, 30, 40, 50];
+    List<int> stepBPM = [40, 120, 40, 120, 40];
+
+    int index = 0;
+*/
     _metronomePlugin.init(
       'assets/audio/snare44_wav.wav',
       bpm: bpm,
       volume: vol,
       enableTickCallback: true,
     );
+
     _metronomePlugin.onListenTick((_) {
       if (kDebugMode) {
         print('tick');
       }
-      totalCounter++;
-      print('${totalCounter}-----${bpm}');
+      /*
+      if (index < 5) {
+        if (totalCounter == stepChange[index]) {
+          bpm = stepBPM[index];
+          _metronomePlugin.setBPM(bpm);
+          index++;
+        }
+      } */
 
       if (totalCounter == 10) {
         bpm = 40;
         _metronomePlugin.setBPM(bpm);
       }
+
+      if (totalCounter == 20) {
+        bpm = 120;
+        _metronomePlugin.setBPM(bpm);
+      }
+
+      if (totalCounter == 30) {
+        bpm = 40;
+        _metronomePlugin.setBPM(bpm);
+      }
+
+      if (totalCounter == 40) {
+        bpm = 120;
+        _metronomePlugin.setBPM(bpm);
+      }
+
+      if (totalCounter == 50) {
+        bpm = 40;
+        _metronomePlugin.setBPM(bpm);
+      }
+
+      if (totalCounter == 60) {
+        bpm = 120;
+        _metronomePlugin.setBPM(bpm);
+      }
+
+      //확인용
+      print('${totalCounter}-----${bpm}-----${isFirstStep}');
+
+      totalCounter++;
 
       setState(() {
         if (metronomeIcon == metronomeIconRight) {
@@ -89,12 +134,14 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
-        title: Text('Two Steps Tempo Generator',
-        style: TextStyle(
-          color: Colors.black,
-          fontSize: 25.0,
-          fontWeight: FontWeight.w600,
-        ),),
+        title: const Text(
+          'Two Steps Tempo Generator',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 25.0,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         centerTitle: true,
       ),
       body: TabBarView(
@@ -193,7 +240,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
           controller!.animateTo(index);
         });
       },
-      items: [
+      items: const [
         BottomNavigationBarItem(
           icon: Icon(
             Icons.queue_music_rounded,
