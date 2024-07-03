@@ -16,11 +16,11 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
   TabController? controller;
   int firstBPM = 60, firstTimes = 6;
   int secondBPM = 20, secondTimes = 3;
-  int setsNumber = 1;
+  int setsNumber = 5;
 
   final _metronomePlugin = Metronome();
   bool isplaying = false;
-  int bpm = 120;
+  int bpm=10;
   int vol = 50;
   String metronomeIcon = 'assets/metronome-left.png';
   String metronomeIconRight = 'assets/metronome-right.png';
@@ -41,18 +41,35 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
     'woodblock_high'
   ];
 
+
   @override
   void initState() {
     super.initState();
     controller = TabController(length: 2, vsync: this);
     controller!.addListener(tabListener);
 
-    /*
-    List<int> stepChange = [10, 20, 30, 40, 50];
-    List<int> stepBPM = [40, 120, 40, 120, 40];
+    List<int> stepChange = [0];
+
+    int sum = 0;
+    int step = 2 * setsNumber;
+
+    for (int i = 0; i < step; i++) {
+      if (i % 2 == 0) {
+        sum = sum + firstTimes;
+        stepChange.add(sum);
+      } else {
+        sum = sum + secondTimes;
+        stepChange.add(sum);
+      }
+    }
+
+    List<int> stepBPM = [firstBPM, secondBPM];
+
+    print(stepChange);
+    print(stepBPM);
 
     int index = 0;
-*/
+
     _metronomePlugin.init(
       'assets/audio/snare44_wav.wav',
       bpm: bpm,
@@ -60,19 +77,21 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
       enableTickCallback: true,
     );
 
+
     _metronomePlugin.onListenTick((_) {
       if (kDebugMode) {
         print('tick');
       }
-      /*
-      if (index < 5) {
+
+      if (index < step) {
         if (totalCounter == stepChange[index]) {
-          bpm = stepBPM[index];
+          bpm = stepBPM[index % 2];
           _metronomePlugin.setBPM(bpm);
           index++;
         }
-      } */
+      }
 
+/*
       if (totalCounter == 10) {
         bpm = 40;
         _metronomePlugin.setBPM(bpm);
@@ -102,7 +121,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
         bpm = 120;
         _metronomePlugin.setBPM(bpm);
       }
-
+*/
       //확인용
       print('${totalCounter}-----${bpm}-----${isFirstStep}');
 
