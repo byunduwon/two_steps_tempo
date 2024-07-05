@@ -4,6 +4,7 @@ import 'package:two_steps_metronome/screen/home_screen.dart';
 import 'package:two_steps_metronome/screen/settings_screen.dart';
 import 'package:two_steps_metronome/const/colors.dart';
 import 'package:metronome/metronome.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class RootScreen extends StatefulWidget {
   const RootScreen({Key? key}) : super(key: key);
@@ -14,24 +15,23 @@ class RootScreen extends StatefulWidget {
 
 class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
   TabController? controller;
-  int firstBPM = 60, firstTimes = 6;
-  int secondBPM = 20, secondTimes = 3;
-  int setsNumber = 5;
+
+  final player = AudioPlayer();
+
+  int firstBPM = 60, firstTimes = 120;
+  int secondBPM = 30, secondTimes = 60;
 
   final _metronomePlugin = Metronome();
   bool isplaying = false;
-  int bpm=10;
+  int bpm = 60;
+
   int vol = 50;
   String metronomeIcon = 'assets/metronome-left.png';
   String metronomeIconRight = 'assets/metronome-right.png';
   String metronomeIconLeft = 'assets/metronome-left.png';
-  int firstCounter = 0;
-  int secondCounter = 0;
-  int setCounter = 0;
   int totalCounter = 0;
 
-  bool isFirstStep = true;
-
+  /*
   final List wavs = [
     'base',
     'claves',
@@ -40,7 +40,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
     'sticks',
     'woodblock_high'
   ];
-
+   */
 
   @override
   void initState() {
@@ -48,84 +48,55 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
     controller = TabController(length: 2, vsync: this);
     controller!.addListener(tabListener);
 
-    List<int> stepChange = [0];
+    // Create the audio player.
+    // Set the release mode to keep the source after playback has completed.
+    player.setReleaseMode(ReleaseMode.stop);
 
-    int sum = 0;
-    int step = 2 * setsNumber;
+    // Start the player as soon as the app is displayed.
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await player.setVolume(1.0);
+      await player.setSource(AssetSource('audio/drum.wav'));
+      await player.resume();
+    });
 
-    for (int i = 0; i < step; i++) {
-      if (i % 2 == 0) {
-        sum = sum + firstTimes;
-        stepChange.add(sum);
-      } else {
-        sum = sum + secondTimes;
-        stepChange.add(sum);
-      }
-    }
-
-    List<int> stepBPM = [firstBPM, secondBPM];
-
-    print(stepChange);
-    print(stepBPM);
-
-    int index = 0;
 
     _metronomePlugin.init(
       'assets/audio/snare44_wav.wav',
-      bpm: bpm,
+      bpm: firstBPM,
       volume: vol,
       enableTickCallback: true,
     );
 
 
     _metronomePlugin.onListenTick((_) {
+
+      //bpm = firstBPM;
+
       if (kDebugMode) {
         print('tick');
       }
 
-      if (index < step) {
-        if (totalCounter == stepChange[index]) {
-          bpm = stepBPM[index % 2];
-          _metronomePlugin.setBPM(bpm);
-          index++;
-        }
-      }
-
-/*
-      if (totalCounter == 10) {
-        bpm = 40;
+      if (totalCounter == 0) {
+        bpm = firstBPM;
         _metronomePlugin.setBPM(bpm);
       }
 
-      if (totalCounter == 20) {
-        bpm = 120;
+      if (totalCounter == firstTimes-1) {
+        bpm = secondBPM;
         _metronomePlugin.setBPM(bpm);
+        endPlay();
       }
 
-      if (totalCounter == 30) {
-        bpm = 40;
-        _metronomePlugin.setBPM(bpm);
-      }
-
-      if (totalCounter == 40) {
-        bpm = 120;
-        _metronomePlugin.setBPM(bpm);
-      }
-
-      if (totalCounter == 50) {
-        bpm = 40;
-        _metronomePlugin.setBPM(bpm);
-      }
-
-      if (totalCounter == 60) {
-        bpm = 120;
-        _metronomePlugin.setBPM(bpm);
-      }
-*/
       //확인용
-      print('${totalCounter}-----${bpm}-----${isFirstStep}');
+      print('${totalCounter}-----${bpm}');
 
       totalCounter++;
+
+
+      if (totalCounter == (firstTimes+secondTimes)) {
+             totalCounter = 0;
+             endPlay();
+      }
 
       setState(() {
         if (metronomeIcon == metronomeIconRight) {
@@ -134,6 +105,11 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
           metronomeIcon = metronomeIconRight;
         }
       });
+
+
+
+
+
     });
   }
 
@@ -145,6 +121,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
   dispose() {
     controller!.removeListener(tabListener);
     _metronomePlugin.destroy();
+    player.dispose();
     super.dispose();
   }
 
@@ -174,81 +151,85 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
   List<Widget> renderChildren() {
     return [
       HomeScreen(
+        vol: vol,
         firstBPM: firstBPM,
         firstTimes: firstTimes,
         secondBPM: secondBPM,
         secondTimes: secondTimes,
-        setsNumber: setsNumber,
         playState: isplaying,
-        firstBPMChanged: firstBPMChanged,
-        firstTimesChanged: firstTimesChanged,
-        secondBPMChanged: secondBPMChanged,
-        secondTimesChanged: secondTimesChanged,
-        setsNumberChanged: setsNumberChanged,
         imagePath: metronomeIcon,
         playChanged: playChanged,
+        volumeChangeEnd: volumeChangeEnd,
+        volumeSliderChange: volumeSliderChange,
       ),
       SettingsScreen(
         firstBPM: firstBPM,
         firstTimes: firstTimes,
         secondBPM: secondBPM,
         secondTimes: secondTimes,
-        setsNumber: setsNumber,
-        firstBPMChanged: firstBPMChanged,
-        firstTimesChanged: firstTimesChanged,
-        secondBPMChanged: secondBPMChanged,
-        secondTimesChanged: secondTimesChanged,
-        setsNumberChanged: setsNumberChanged,
+        firstBpmSetting: firstBpmSetting,
+        firstTimesSetting: firstTimesSetting,
+        secondBpmSetting: secondBpmSetting,
+        secondTimesSetting: secondTimesSetting,
+        init: init,
       ),
     ];
   }
 
-  void firstBPMChanged(double val1) {
-    setState(() {
-      firstBPM = val1.toInt();
-    });
-  }
-
-  void firstTimesChanged(int time1) {
-    setState(() {
-      firstBPM = time1;
-    });
-  }
-
-  void secondBPMChanged(double val2) {
-    setState(() {
-      secondBPM = val2.toInt();
-    });
-  }
-
-  void secondTimesChanged(int time2) {
-    setState(() {
-      secondTimes = time2;
-    });
-  }
-
-  void setsNumberChanged(int setNum) {
-    setState(() {
-      setsNumber = setNum;
-    });
-  }
 
   void playChanged(bool p_state) async {
     if (p_state) {
       _metronomePlugin.pause();
       isplaying = false;
     } else {
-      //bpm = 40;
-      //_metronomePlugin.setBPM(40);
       _metronomePlugin.setVolume(vol);
       _metronomePlugin.play(bpm);
       isplaying = true;
     }
-    // int? bpm2 = await _metronomePlugin.getBPM();
-    // print(bpm2);
-    // int? vol2 = await _metronomePlugin.getVolume();
-    // print(vol2);
     setState(() {});
+  }
+
+  void volumeChangeEnd(int val) {
+    _metronomePlugin.setVolume(val);
+  }
+
+  void volumeSliderChange(double val) {
+    vol = val.toInt();
+    setState(() {});
+  }
+
+  void firstBpmSetting(int val){
+    firstBPM = val;
+    setState((){});
+  }
+
+  void firstTimesSetting(int val){
+    firstTimes = val;
+    setState((){});
+  }
+
+  void secondBpmSetting(int val){
+    secondBPM = val;
+    setState((){});
+  }
+
+  void secondTimesSetting(int val){
+    secondTimes = val;
+    setState((){});
+  }
+
+  void endPlay() async {
+    player.play(AssetSource('audio/s.wav'));
+    //await player.setSource(AssetSource('clock.mp3'));
+  }
+
+  void init(int val) {
+    totalCounter = val*0;
+    firstBPM = 60;
+    firstTimes = 120;
+    secondBPM = 30;
+    secondTimes = 60;
+    setState((){});
   }
 
   BottomNavigationBar renderBottomNavigation() {
@@ -262,9 +243,9 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
       items: const [
         BottomNavigationBarItem(
           icon: Icon(
-            Icons.queue_music_rounded,
+            Icons.home,
           ),
-          label: 'start',
+          label: 'home',
         ),
         BottomNavigationBarItem(
           icon: Icon(
