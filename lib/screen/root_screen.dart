@@ -5,6 +5,7 @@ import 'package:two_steps_metronome/screen/settings_screen.dart';
 import 'package:two_steps_metronome/const/colors.dart';
 import 'package:metronome/metronome.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RootScreen extends StatefulWidget {
   const RootScreen({Key? key}) : super(key: key);
@@ -48,6 +49,9 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
     controller = TabController(length: 2, vsync: this);
     controller!.addListener(tabListener);
 
+    // Calling of initial data
+    initData();
+
     // Create the audio player.
     // Set the release mode to keep the source after playback has completed.
     player.setReleaseMode(ReleaseMode.stop);
@@ -59,7 +63,6 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
       await player.resume();
     });
 
-
     _metronomePlugin.init(
       'assets/audio/snare44_wav.wav',
       bpm: firstBPM,
@@ -67,9 +70,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
       enableTickCallback: true,
     );
 
-
     _metronomePlugin.onListenTick((_) {
-
       //bpm = firstBPM;
 
       if (kDebugMode) {
@@ -81,7 +82,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
         _metronomePlugin.setBPM(bpm);
       }
 
-      if (totalCounter == firstTimes-1) {
+      if (totalCounter == firstTimes - 1) {
         bpm = secondBPM;
         _metronomePlugin.setBPM(bpm);
         endPlay();
@@ -92,10 +93,9 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
 
       totalCounter++;
 
-
-      if (totalCounter == (firstTimes+secondTimes)) {
-             totalCounter = 0;
-             endPlay();
+      if (totalCounter == (firstTimes + secondTimes)) {
+        totalCounter = 0;
+        endPlay();
       }
 
       setState(() {
@@ -105,11 +105,6 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
           metronomeIcon = metronomeIconRight;
         }
       });
-
-
-
-
-
     });
   }
 
@@ -176,7 +171,6 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
     ];
   }
 
-
   void playChanged(bool p_state) async {
     if (p_state) {
       _metronomePlugin.pause();
@@ -198,24 +192,24 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
     setState(() {});
   }
 
-  void firstBpmSetting(int val){
+  void firstBpmSetting(int val) {
     firstBPM = val;
-    setState((){});
+    setState(() {});
   }
 
-  void firstTimesSetting(int val){
+  void firstTimesSetting(int val) {
     firstTimes = val;
-    setState((){});
+    setState(() {});
   }
 
-  void secondBpmSetting(int val){
+  void secondBpmSetting(int val) {
     secondBPM = val;
-    setState((){});
+    setState(() {});
   }
 
-  void secondTimesSetting(int val){
+  void secondTimesSetting(int val) {
     secondTimes = val;
-    setState((){});
+    setState(() {});
   }
 
   void endPlay() async {
@@ -224,12 +218,55 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
   }
 
   void init(int val) {
-    totalCounter = val*0;
+    totalCounter = val * 0;
     firstBPM = 60;
     firstTimes = 120;
     secondBPM = 30;
     secondTimes = 60;
-    setState((){});
+    setState(() {});
+  }
+
+  /*
+  void beginDataSave() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString(
+        'two steps',
+        (firstBPM + 500).toString() +
+            (firstTimes + 500).toString() +
+            (secondBPM + 500).toString() +
+            (secondTimes + 500).toString());
+  }
+
+  void beginDataRead() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    final String? str = prefs.getString('two steps');
+
+    firstBPM = int.parse(str!.substring(0, 3)) - 500;
+    firstTimes = int.parse(str.substring(3, 6)) - 500;
+    secondBPM = int.parse(str.substring(6, 9)) - 500;
+    secondTimes = int.parse(str.substring(9, 12)) - 500;
+  }
+   */
+
+  void initData() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? str = prefs.getString('two steps');
+
+    if (str == null) {
+      await prefs.setString(
+          'two steps',
+          (firstBPM + 500).toString() +
+              (firstTimes + 500).toString() +
+              (secondBPM + 500).toString() +
+              (secondTimes + 500).toString());
+    } else {
+      firstBPM = int.parse(str.substring(0, 3)) - 500;
+      firstTimes = int.parse(str.substring(3, 6)) - 500;
+      secondBPM = int.parse(str.substring(6, 9)) - 500;
+      secondTimes = int.parse(str.substring(9, 12)) - 500;
+    }
   }
 
   BottomNavigationBar renderBottomNavigation() {

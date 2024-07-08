@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:two_steps_metronome/const/colors.dart';
 import 'package:flutter_spinbox/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsScreen extends StatelessWidget {
   final int firstBPM;
@@ -100,7 +101,9 @@ class SettingsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             OutlinedButton(
-              onPressed: () {},
+              onPressed: () {
+                dataSave();
+              },
                 child: Text('save'),
             ),
             OutlinedButton(
@@ -114,5 +117,16 @@ class SettingsScreen extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  void dataSave() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString(
+        'two steps',
+        (firstBPM + 500).toString() +
+            (firstTimes + 500).toString() +
+            (secondBPM + 500).toString() +
+            (secondTimes + 500).toString());
   }
 }

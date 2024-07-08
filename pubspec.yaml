@@ -38,6 +38,7 @@ dependencies:
   metronome: ^1.1.4
   flutter_spinbox: ^0.13.1
   audioplayers: ^6.0.0
+  shared_preferences: ^2.2.3
 
 dev_dependencies:
   flutter_test:
