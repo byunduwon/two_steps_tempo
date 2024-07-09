@@ -22,6 +22,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
 
   int firstBPM = 60, firstTimes = 120;
   int secondBPM = 30, secondTimes = 60;
+  double cymbalsVolume = 0.5;
 
   final _metronomePlugin = Metronome();
   bool isplaying = false;
@@ -31,7 +32,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
   String metronomeIcon = 'assets/metronome-left.png';
   String metronomeIconRight = 'assets/metronome-right.png';
   String metronomeIconLeft = 'assets/metronome-left.png';
-  int totalCounter = 0;
+  int _Counter = 0;
 
   /*
   final List wavs = [
@@ -55,11 +56,11 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
 
     // Create the audio player.
     // Set the release mode to keep the source after playback has completed.
-    player.setReleaseMode(ReleaseMode.stop);
+    //player.setReleaseMode(ReleaseMode.stop);
 
     // Start the player as soon as the app is displayed.
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await player.setVolume(1.0);
+      await player.setVolume(cymbalsVolume);
       await player.setSource(AssetSource('audio/drum.wav'));
       await player.resume();
     });
@@ -78,24 +79,24 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
         print('tick');
       }
 
-      if (totalCounter == 0) {
+      if (_Counter == 0) {
         bpm = firstBPM;
         _metronomePlugin.setBPM(bpm);
       }
 
-      if (totalCounter == firstTimes+1) {
+      if (_Counter == firstTimes+1 && secondTimes != 0) {
         bpm = secondBPM;
         _metronomePlugin.setBPM(bpm);
         endPlay();
       }
 
       //확인용
-      print('${totalCounter}-----${bpm}');
+      print('${_Counter}-----${bpm}');
 
-      totalCounter++;
+      _Counter++;
 
-      if (totalCounter == (firstTimes + secondTimes+2)) {
-        totalCounter = 0;
+      if (_Counter == (firstTimes + secondTimes+2) && secondTimes != 0) {
+        _Counter = 0;
         endPlay();
       }
 
@@ -130,7 +131,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
           'Two Steps Tempo Generator',
           style: TextStyle(
             color: Colors.black,
-            fontSize: 25.0,
+            fontSize: 20.0,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -193,6 +194,8 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
 
   void volumeChangeEnd(int val) {
     _metronomePlugin.setVolume(val);
+    cymbalsVolume = val.toDouble()/100.0;
+    player.setVolume(cymbalsVolume);
   }
 
   void volumeSliderChange(double val) {
@@ -226,7 +229,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
   }
 
   void init(int val) {
-    totalCounter = val * 0;
+    _Counter = val * 0;
     firstBPM = 60;
     firstTimes = 120;
     secondBPM = 30;
@@ -292,6 +295,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
 
   void thisClosed() {
     _metronomePlugin.pause();
+    player.pause();
     SystemNavigator.pop();
   }
 

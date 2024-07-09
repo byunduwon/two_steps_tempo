@@ -36,41 +36,15 @@ class HomeScreen extends StatelessWidget {
         child: ListView(
           children: [
             SizedBox(height: 32.0),
-            Center(
+            Container(
               child: Image.asset(
                 imagePath,
                 height: 200,
                 //color: Colors.blue,
               ),
+              color: Colors.yellow,
             ),
             SizedBox(height: 32.0),
-            const Padding(
-                padding: EdgeInsets.only(left: 20.0),
-                child: Row(
-                  children: [
-                    Text(
-                      'volume',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 20.0,
-                      ),
-                    ),
-                  ],
-                )),
-            Slider(
-              value: vol.toDouble(),
-              min: 0,
-              max: 100,
-              divisions: 100,
-              label: vol.toStringAsFixed(0),
-              onChangeEnd: (val) {
-                volumeChangeEnd(vol);
-              },
-              onChanged: (val) {
-                volumeSliderChange(val);
-              },
-            ),
-            SizedBox(height: 40),
             Text(
               '1st step : speed: ${firstBPM}, times: ${firstTimes}',
               style: const TextStyle(
@@ -85,50 +59,37 @@ class HomeScreen extends StatelessWidget {
                 fontSize: 20.0,
               ),
             ),
-            /*   DataTable(
-              columns: const <DataColumn>[
-                DataColumn(
-                  label: Expanded(
-                    child: Text(
-                      'steps',
-                      style: TextStyle(fontStyle: FontStyle.normal),
-                    ),
-                  ),
-                ),
-                DataColumn(
-                  label: Expanded(
-                    child: Text(
-                      'speed(BPM)',
-                      style: TextStyle(fontStyle: FontStyle.normal),
-                    ),
-                  ),
-                ),
-                DataColumn(
-                  label: Expanded(
-                    child: Text(
-                      'times',
-                       style: TextStyle(fontStyle: FontStyle.normal),
-                    ),
-                  ),
-                ),
-              ],
-              rows: const <DataRow>[
-                DataRow(
-                  cells: <DataCell>[
-                    DataCell(Text('First')),
-                    DataCell(Text('60')),
-                    DataCell(Text('120')),
-                  ],
-                ),
-                DataRow(
-                  cells: <DataCell>[
-                    DataCell(Text('Second')),
-                    DataCell(Text('60')),
-                    DataCell(Text('20'))
-                  ],
+            SizedBox(height: 20.0),
+            Column(
+              children: [
+                const Padding(
+                    padding: EdgeInsets.only(left: 20.0),
+                    child: Row(
+                      children: [
+                        Text(
+                          'volume',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20.0,
+                          ),
+                        ),
+                      ],
+                    )),
+                Slider(
+                  value: vol.toDouble(),
+                  min: 0,
+                  max: 100,
+                  divisions: 100,
+                  label: vol.toStringAsFixed(0),
+                  onChangeEnd: (val) {
+                    volumeChangeEnd(vol);
+                  },
+                  onChanged: (val) {
+                    volumeSliderChange(val);
+                  },
                 ),
               ],
-            ),*/
+            ),
             SizedBox(height: 32.0),
             OutlinedButton(
               onPressed: () {
