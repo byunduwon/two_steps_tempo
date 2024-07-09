@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:two_steps_metronome/screen/home_screen.dart';
 import 'package:two_steps_metronome/screen/settings_screen.dart';
 import 'package:two_steps_metronome/const/colors.dart';
@@ -82,7 +83,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
         _metronomePlugin.setBPM(bpm);
       }
 
-      if (totalCounter == firstTimes - 1) {
+      if (totalCounter == firstTimes+1) {
         bpm = secondBPM;
         _metronomePlugin.setBPM(bpm);
         endPlay();
@@ -93,7 +94,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
 
       totalCounter++;
 
-      if (totalCounter == (firstTimes + secondTimes)) {
+      if (totalCounter == (firstTimes + secondTimes+2)) {
         totalCounter = 0;
         endPlay();
       }
@@ -139,6 +140,12 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
         controller: controller,
         children: renderChildren(),
       ),
+        floatingActionButton: FloatingActionButton(
+          onPressed:() {
+            thisClosed();
+          },
+          child: const Icon(Icons.exit_to_app),
+        ),
       bottomNavigationBar: renderBottomNavigation(),
     );
   }
@@ -167,6 +174,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
         secondBpmSetting: secondBpmSetting,
         secondTimesSetting: secondTimesSetting,
         init: init,
+        dataSave: dataSave,
       ),
     ];
   }
@@ -267,7 +275,29 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
       secondBPM = int.parse(str.substring(6, 9)) - 500;
       secondTimes = int.parse(str.substring(9, 12)) - 500;
     }
+    setState(() {});
   }
+
+  void dataSave(int val) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString(
+        'two steps',
+        (firstBPM + 500).toString() +
+            (firstTimes + 500).toString() +
+            (secondBPM + 500).toString() +
+            (secondTimes + 500).toString());
+    setState(() {});
+  }
+
+  void thisClosed() {
+    _metronomePlugin.pause();
+    SystemNavigator.pop();
+  }
+
+
+
+
 
   BottomNavigationBar renderBottomNavigation() {
     return BottomNavigationBar(

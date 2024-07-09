@@ -14,6 +14,7 @@ class SettingsScreen extends StatelessWidget {
   final ValueChanged<int> secondBpmSetting;
   final ValueChanged<int> secondTimesSetting;
   final ValueChanged<int> init;
+  final ValueChanged<int> dataSave;
 
   const SettingsScreen({
     required this.firstBPM,
@@ -26,6 +27,7 @@ class SettingsScreen extends StatelessWidget {
     required this.secondBpmSetting,
     required this.secondTimesSetting,
     required this.init,
+    required this.dataSave,
   }) : super(key: key);
 
   @override
@@ -102,7 +104,7 @@ class SettingsScreen extends StatelessWidget {
           children: [
             OutlinedButton(
               onPressed: () {
-                dataSave();
+                dataSave(firstBPM);
               },
                 child: Text('save'),
             ),
@@ -117,16 +119,5 @@ class SettingsScreen extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  void dataSave() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    await prefs.setString(
-        'two steps',
-        (firstBPM + 500).toString() +
-            (firstTimes + 500).toString() +
-            (secondBPM + 500).toString() +
-            (secondTimes + 500).toString());
   }
 }
