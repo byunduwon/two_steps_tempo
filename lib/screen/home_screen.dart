@@ -42,7 +42,7 @@ class HomeScreen extends StatelessWidget {
                 height: 200,
                 //color: Colors.blue,
               ),
-              color: Colors.yellow,
+              //color: Colors.yellow,
             ),
             SizedBox(height: 32.0),
             Text(

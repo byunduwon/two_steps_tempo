@@ -79,6 +79,17 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
         print('tick');
       }
 
+      ////////////////////////////
+      setState(() {
+        if (metronomeIcon == metronomeIconRight) {
+          metronomeIcon = metronomeIconLeft;
+        } else {
+          metronomeIcon = metronomeIconRight;
+        }
+      });
+
+      ////////////////////////////
+
       if (_Counter == 0) {
         bpm = firstBPM;
         _metronomePlugin.setBPM(bpm);
@@ -99,14 +110,6 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
         _Counter = 0;
         endPlay();
       }
-
-      setState(() {
-        if (metronomeIcon == metronomeIconRight) {
-          metronomeIcon = metronomeIconLeft;
-        } else {
-          metronomeIcon = metronomeIconRight;
-        }
-      });
     });
   }
 
