@@ -131,7 +131,7 @@ class _RootScreenState extends State<RootScreen> with TickerProviderStateMixin {
       appBar: AppBar(
         backgroundColor: Colors.blue,
         title: const Text(
-          'Two Steps Tempo Generator',
+          'Two Step Tempo Generator',
           style: TextStyle(
             color: Colors.black,
             fontSize: 20.0,

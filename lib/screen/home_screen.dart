@@ -45,19 +45,33 @@ class HomeScreen extends StatelessWidget {
               //color: Colors.yellow,
             ),
             SizedBox(height: 32.0),
-            Text(
-              '1st step : speed: ${firstBPM}, times: ${firstTimes}',
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 20.0,
-              ),
-            ),
-            Text(
-              '2nd step : speed: ${secondBPM}, times: ${secondTimes}',
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 20.0,
-              ),
+            Table(
+              defaultColumnWidth: FixedColumnWidth(120.0),
+              border: TableBorder.all(
+                  color: Colors.black, style: BorderStyle.solid, width: 2),
+              children: [
+                TableRow(children: [
+                  Column(children: [
+                    Text('Step', style: TextStyle(fontSize: 16.0)),
+                  ]),
+                  Column(children: [
+                    Text('Tempo(BPM)', style: TextStyle(fontSize: 16.0))
+                  ]),
+                  Column(children: [
+                    Text('Times', style: TextStyle(fontSize: 16.0))
+                  ]),
+                ]),
+                TableRow(children: [
+                  Column(children: [Text('1st step')]),
+                  Column(children: [Text('$firstBPM')]),
+                  Column(children: [Text('$firstTimes')]),
+                ]),
+                TableRow(children: [
+                  Column(children: [Text('2nd step')]),
+                  Column(children: [Text('$secondBPM')]),
+                  Column(children: [Text('$secondTimes')]),
+                ]),
+              ],
             ),
             SizedBox(height: 20.0),
             Column(
@@ -91,12 +105,25 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
             SizedBox(height: 32.0),
-            OutlinedButton(
-              onPressed: () {
-                playChanged(playState);
-              },
-              child: Icon(playState ? Icons.pause : Icons.play_arrow),
-            )
+            Row(
+              children: [
+                OutlinedButton(
+                    onPressed: (){},
+                    child: Text('처음부터'),
+                ),
+                OutlinedButton(
+                  onPressed: () {
+                    playChanged(playState);
+                  },
+                  child: Icon(playState ? Icons.pause : Icons.play_arrow),
+                ),
+                OutlinedButton(
+                    onPressed: (){},
+                    child: Text('close'),
+                ),
+              ],
+            ),
+
           ],
         ));
   }
